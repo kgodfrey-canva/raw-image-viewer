@@ -1,20 +1,25 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  root: 'media', // Set the root to the 'media' directory
   plugins: [vue()],
+  root: resolve(__dirname, 'webview'),
+  base: './',
   build: {
-    outDir: '../dist/media', // Adjust outDir relative to the new root ('media' directory)
+    outDir: resolve(__dirname, 'dist/webview'),
+    emptyOutDir: true,
     rollupOptions: {
-      // input: 'main.js', // Entry point relative to the new root, if not index.html
-      output: {
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
-      }
+      input: resolve(__dirname, 'webview/index.html')
     }
   },
-  base: './' // Ensures relative paths in the built assets, good for webviews
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'webview/src'),
+      '@shared': resolve(__dirname, 'src/shared')
+    }
+  },
+  server: {
+    port: 3000
+  }
 });
