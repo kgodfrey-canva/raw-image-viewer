@@ -2,7 +2,15 @@
  * 扩展常量定义
  */
 export const EXTENSION_ID = 'raw-image-viewer';
-export const VIEW_TYPE = 'raw-image-viewer.rawImage';
+export const VIEW_TYPE_RAW = 'raw-image-viewer.rawImage';
+export const VIEW_TYPE_BIN = 'raw-image-viewer.binImage';
+
+/**
+ * 配置键名
+ */
+export const CONFIG_KEYS = {
+  ENABLE_BIN_SUPPORT: 'raw-image-viewer.enableBinSupport'
+} as const;
 
 export const SUPPORTED_BITS_PER_PIXEL = [8, 10, 12, 14, 16] as const;
 

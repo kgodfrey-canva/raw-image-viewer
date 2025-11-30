@@ -1,59 +1,17 @@
-# VS Code 相关
-.vscode/**
-.vscode-test/**
-**/.vscode-test.*
+# VS Code 扩展发布包 - 最小化白名单
+# 只包含扩展运行必需的文件
 
-# 源代码文件（已编译到out目录）
-src/**
-**/*.ts
-**/*.map
+# 忽略所有文件
+**
 
-# Webview源代码（已构建到dist目录）
-webview/src/**
-webview/public/**
-webview/node_modules/**
-webview/package-lock.json
-webview/vite.config.js
+# === 核心运行文件 ===
+!package.json
+!README.md
+!LICENSE
 
-# 配置文件
-.gitignore
-.yarnrc
-vsc-extension-quickstart.md
-**/tsconfig.json
-**/.eslintrc.json
-vite.config.js
-config/**
+# === 编译后的代码（必需） ===
+!out/extension/**
+!out/shared/**
 
-# 开发依赖
-node_modules/**
-package-lock.json
-
-# 文档和说明（保留在扩展中）
-# README.md
-# CHANGELOG.md
-
-# 测试文件
-**/test/**
-out/test/**
-
-# 临时文件和缓存
-**/*.log
-**/*.tmp
-.cache/**
-.vite/**
-
-# 构建工具和脚本
-tools/**
-
-# 开发文档
-BUILD_VERIFICATION.md
-REFACTOR_PLAN.md
-REFACTOR_SUMMARY.md
-
-# 示例文件
-examples/**
-docs/**
-
-# Git相关
-.git/**
-.github/**
+# === 构建后的webview（必需） ===
+!dist/webview/**

@@ -2,7 +2,7 @@
   "name": "raw-image-viewer",
   "displayName": "RawImageViewer",
   "description": "Professional RAW image viewer for VS Code with support for various pixel formats and intelligent image processing",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "YoungHong1992",
   "engines": {
     "vscode": "^1.91.0"
@@ -20,6 +20,10 @@
       {
         "command": "raw-image-viewer.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "raw-image-viewer.openWithRawViewer",
+        "title": "Open with Raw Image Viewer"
       }
     ],
     "customEditors": [
@@ -30,9 +34,46 @@
           {
             "filenamePattern": "*.raw"
           }
-        ]
+        ],
+        "priority": "default"
+      },
+      {
+        "viewType": "raw-image-viewer.binImage",
+        "displayName": "Raw Image Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.bin"
+          }
+        ],
+        "priority": "default"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Raw Image Viewer",
+      "properties": {
+        "raw-image-viewer.enableBinSupport": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable support for .bin files as raw image files"
+        }
+      }
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "raw-image-viewer.openWithRawViewer",
+          "when": "resourceLangId == plaintext && resourceFilename =~ /\\.bin$/ && config.raw-image-viewer.enableBinSupport == true",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "raw-image-viewer.openWithRawViewer",
+          "when": "resourceFilename =~ /\\.bin$/ && config.raw-image-viewer.enableBinSupport == true",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
@@ -43,8 +84,8 @@
     "test": "npm run compile && npm run lint && node ./out/test/runTest.js",
     "clean": "rimraf out dist",
     "clean:all": "rimraf out dist node_modules webview/node_modules",
-    "dev": "cd webview && npm run dev",
-    "preview": "cd webview && npm run preview",
+    "dev": "npm --prefix webview run dev",
+    "preview": "npm --prefix webview run preview",
     "build": "npm run compile && npm run build:webview",
     "build:webview": "npm --prefix webview run build",
     "package": "npm run build && npx vsce package",
@@ -59,16 +100,10 @@
     "@types/vscode": "^1.91.0",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.11.0",
-    "@vitejs/plugin-vue": "^5.0.5",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
     "eslint": "^8.57.0",
     "rimraf": "^5.0.7",
-    "typescript": "^5.4.5",
-    "vite": "^5.4.19",
-    "vue": "^3.4.27"
-  },
-  "dependencies": {
-    "pinia": "^3.0.3"
+    "typescript": "^5.4.5"
   }
 }
