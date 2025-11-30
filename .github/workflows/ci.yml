@@ -26,8 +26,14 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
+    - name: Install webview dependencies
+      run: npm ci --prefix webview
+    
     - name: Install xvfb for headless testing
-      run: sudo apt-get update && sudo apt-get install -y xvfb
+      run: |
+        sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list
+        sudo rm -f /etc/apt/sources.list.d/azure-cli.list
+        sudo apt-get update && sudo apt-get install -y xvfb
     
     - name: Type check
       run: npm run typecheck
@@ -58,18 +64,27 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
     
     - name: Install dependencies
       run: npm ci
     
+    - name: Install webview dependencies
+      run: npm ci --prefix webview
+    
     - name: Build extension
       run: npm run build
     
+    - name: Install vsce
+      run: npm install -g @vscode/vsce
+    
+    - name: Package extension
+      run: vsce package
+    
     - name: Check package size
       run: |
-        if [ -f "raw-image-viewer-*.vsix" ]; then
+        if ls raw-image-viewer-*.vsix 1> /dev/null 2>&1; then
           echo "Extension package created successfully"
           ls -lh raw-image-viewer-*.vsix
         else
