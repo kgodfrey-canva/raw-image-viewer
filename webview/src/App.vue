@@ -43,6 +43,7 @@ onMounted(() => {
     switch (type) {
       case 'init': {
         if (body.value) {
+          store.setLocale(body.locale || 'en');
           const rawData = new Uint8Array(body.value);
           store.setRawData(rawData);
 

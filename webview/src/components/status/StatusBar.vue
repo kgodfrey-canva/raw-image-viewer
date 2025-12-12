@@ -2,10 +2,10 @@
   <div class="status-bar">
     <div v-if="store.error" class="status-bar-item error-message">{{ store.error }}</div>
     <template v-else>
-      <div class="status-bar-item" id="image-size">图像尺寸: {{ canvasWidth }}×{{ canvasHeight }}</div>
-      <div class="status-bar-item" id="pixel-info">像素: ({{ pixelR }}, {{ pixelG }}, {{ pixelB }})</div>
-      <div class="status-bar-item" id="cursor-pos">坐标: ({{ cursorX }}, {{ cursorY }})</div>
-      <div class="status-bar-item" id="file-info">文件: {{ formatFileSize(fileSize) }}</div>
+      <div class="status-bar-item" id="image-size">{{ t('status.imageSize') }} {{ canvasWidth }}×{{ canvasHeight }}</div>
+      <div class="status-bar-item" id="pixel-info">{{ t('status.pixel') }} ({{ pixelR }}, {{ pixelG }}, {{ pixelB }})</div>
+      <div class="status-bar-item" id="cursor-pos">{{ t('status.cursor') }} ({{ cursorX }}, {{ cursorY }})</div>
+      <div class="status-bar-item" id="file-info">{{ t('status.file') }} {{ formatFileSize(fileSize) }}</div>
     </template>
   </div>
 </template>
@@ -16,6 +16,8 @@ import { storeToRefs } from 'pinia';
 
 const store = useImageStore();
 const { canvasWidth, canvasHeight, pixelR, pixelG, pixelB, cursorX, cursorY, fileSize } = storeToRefs(store);
+
+const t = (key, params) => store.t(key, params);
 
 // 格式化文件大小显示
 const formatFileSize = (bytes) => {

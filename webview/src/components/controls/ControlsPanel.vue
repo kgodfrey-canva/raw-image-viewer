@@ -2,20 +2,20 @@
   <div class="controls-panel">
     <!-- 文件信息 -->
     <div class="section">
-      <h3>文件信息</h3>
+      <h3>{{ t('controls.fileInfo') }}</h3>
       <div class="form-group">
-        <label>文件字节数:</label>
+        <label>{{ t('controls.fileBytes') }}</label>
         <input type="text" :value="formatFileSize(fileSize)" readonly class="readonly-input" />
       </div>
     </div>
 
     <!-- 分辨率设置 -->
     <div class="section">
-      <h3>分辨率设置</h3>
+      <h3>{{ t('controls.resolution') }}</h3>
       
       <!-- 常见尺寸 -->
       <div class="form-group">
-        <label>常见尺寸:</label>
+        <label>{{ t('controls.commonSizes') }}</label>
         <div class="size-buttons">
           <button 
             v-for="size in validSizes" 
@@ -32,7 +32,7 @@
 
       <!-- 手动输入 -->
       <div class="form-group">
-        <label>宽度:</label>
+        <label>{{ t('controls.width') }}</label>
         <div class="input-group">
           <input 
             type="number" 
@@ -41,12 +41,12 @@
             min="1"
             :class="{ 'invalid': !canApply }"
           />
-          <button @click="swapDimensions" class="swap-button" title="交换宽高">⇄</button>
+          <button @click="swapDimensions" class="swap-button" :title="t('controls.swapDimensions')">⇄</button>
         </div>
       </div>
 
       <div class="form-group">
-        <label>高度:</label>
+        <label>{{ t('controls.height') }}</label>
         <div class="input-group">
           <input 
             type="number" 
@@ -61,7 +61,7 @@
 
     <!-- 位深度设置 -->
     <div class="section">
-      <h3>位深度</h3>
+      <h3>{{ t('controls.bitDepth') }}</h3>
       <div class="bits-grid">
         <button 
           v-for="bits in availableBits" 
@@ -70,22 +70,22 @@
           class="bits-btn"
           :class="{ 'active': bitsPerPixel === bits }"
         >
-          {{ bits }}位
+          {{ bits }}
         </button>
       </div>
     </div>
 
     <!-- 像素格式 -->
     <div class="section">
-      <h3>像素格式</h3>
+      <h3>{{ t('controls.pixelFormat') }}</h3>
       <div class="form-group">
         <select v-model="pixelFormat" @change="updateStoreValues">
-          <option value="grayscale">灰度</option>
-          <option value="rgb">RGB</option>
-          <option value="rggb">RGGB (Bayer)</option>
-          <option value="grbg">GRBG (Bayer)</option>
-          <option value="gbrg">GBRG (Bayer)</option>
-          <option value="bggr">BGGR (Bayer)</option>
+          <option value="grayscale">{{ t('pixelFormat.grayscale') }}</option>
+          <option value="rgb">{{ t('pixelFormat.rgb') }}</option>
+          <option value="rggb">{{ t('pixelFormat.rggb') }}</option>
+          <option value="grbg">{{ t('pixelFormat.grbg') }}</option>
+          <option value="gbrg">{{ t('pixelFormat.gbrg') }}</option>
+          <option value="bggr">{{ t('pixelFormat.bggr') }}</option>
         </select>
       </div>
     </div>
@@ -97,7 +97,7 @@
       class="apply-button"
       :class="{ 'disabled': !canApply }"
     >
-      应用设置
+      {{ t('controls.apply') }}
     </button>
   </div>
 </template>
@@ -109,6 +109,8 @@ import { storeToRefs } from 'pinia';
 
 const store = useImageStore();
 const { width, height, bitsPerPixel, pixelFormat, fileSize, availableBits } = storeToRefs(store);
+
+const t = (key, params) => store.t(key, params);
 
 const emit = defineEmits(['applyParams']);
 
@@ -200,7 +202,7 @@ const formatFileSize = (bytes) => {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   const formatted = parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  return `${formatted} (${bytes} bytes)`;
+  return `${formatted} (${t('units.bytesSuffix', { bytes })})`;
 };
 
 // 选择尺寸
@@ -408,7 +410,7 @@ const findAndLoadValidParams = () => {
   }
   
   // 所有位深度都没有合法参数，等待用户手动输入
-  console.log('未找到合法的预设参数，等待用户手动输入');
+  console.log(t('controls.noPresetFound'));
 };
 
 // 监听文件大小变化，按位深度从大到小查找合法参数

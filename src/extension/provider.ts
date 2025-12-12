@@ -106,7 +106,8 @@ export class RawImageViewerProvider implements vscode.CustomReadonlyEditorProvid
       case 'ready':
         this.postMessage(panel, 'init', {
           value: document.documentData,
-          editable: false
+          editable: false,
+          locale: vscode.env.language
         });
         return;
         

@@ -4,6 +4,136 @@ import { COMMON_RESOLUTIONS, SUPPORTED_BITS_PER_PIXEL, PIXEL_FORMATS } from '../
 import { validateImageParams } from '../../../src/shared/utils';
 
 export const useImageStore = defineStore('image', () => {
+  // i18n
+  const locale = ref('en');
+  const messages = {
+    en: {
+      controls: {
+        fileInfo: 'File Info',
+        fileBytes: 'File bytes:',
+        resolution: 'Resolution',
+        commonSizes: 'Common sizes:',
+        width: 'Width:',
+        height: 'Height:',
+        swapDimensions: 'Swap width/height',
+        bitDepth: 'Bit depth',
+        pixelFormat: 'Pixel format',
+        apply: 'Apply',
+        noPresetFound: 'No valid preset found. Waiting for manual input.',
+      },
+      pixelFormat: {
+        grayscale: 'Grayscale',
+        rgb: 'RGB',
+        rggb: 'RGGB (Bayer)',
+        grbg: 'GRBG (Bayer)',
+        gbrg: 'GBRG (Bayer)',
+        bggr: 'BGGR (Bayer)',
+      },
+      status: {
+        imageSize: 'Image:',
+        pixel: 'Pixel:',
+        cursor: 'Cursor:',
+        file: 'File:',
+      },
+      viewer: {
+        processing: 'Processing image...',
+        zoomOut: 'Zoom out',
+        zoomIn: 'Zoom in',
+        resetZoom: 'Reset zoom',
+        fitToWindow: 'Fit to window',
+        fit: 'Fit',
+        errors: {
+          invalidImageParams: 'Invalid image parameters',
+          imageTooLarge: 'Image too large: {width}×{height} exceeds the limit',
+          dataTooSmall: 'Insufficient data: need {required} bytes, got {actual} bytes',
+          processingError: 'Image processing error:',
+        }
+      },
+      errors: {
+        invalidFileSize: 'Invalid file size',
+      },
+      units: {
+        bytesSuffix: '{bytes} bytes',
+      }
+    },
+    'zh-cn': {
+      controls: {
+        fileInfo: '文件信息',
+        fileBytes: '文件字节数:',
+        resolution: '分辨率设置',
+        commonSizes: '常见尺寸:',
+        width: '宽度:',
+        height: '高度:',
+        swapDimensions: '交换宽高',
+        bitDepth: '位深度',
+        pixelFormat: '像素格式',
+        apply: '应用设置',
+        noPresetFound: '未找到合法的预设参数，等待用户手动输入',
+      },
+      pixelFormat: {
+        grayscale: '灰度',
+        rgb: 'RGB',
+        rggb: 'RGGB (Bayer)',
+        grbg: 'GRBG (Bayer)',
+        gbrg: 'GBRG (Bayer)',
+        bggr: 'BGGR (Bayer)',
+      },
+      status: {
+        imageSize: '图像尺寸:',
+        pixel: '像素:',
+        cursor: '坐标:',
+        file: '文件:',
+      },
+      viewer: {
+        processing: '处理图像中...',
+        zoomOut: '缩小',
+        zoomIn: '放大',
+        resetZoom: '重置缩放',
+        fitToWindow: '适应窗口',
+        fit: '适应',
+        errors: {
+          invalidImageParams: '无效的图像参数',
+          imageTooLarge: '图像尺寸过大: {width}×{height} 超过限制',
+          dataTooSmall: '数据不足: 需要 {required} 字节, 实际 {actual} 字节',
+          processingError: '图像处理错误:',
+        }
+      },
+      errors: {
+        invalidFileSize: '文件大小无效',
+      },
+      units: {
+        bytesSuffix: '{bytes} bytes',
+      }
+    }
+  };
+
+  function normalizeLocale(input) {
+    const lang = String(input || '').toLowerCase();
+    if (lang.startsWith('zh')) return 'zh-cn';
+    return 'en';
+  }
+
+  function setLocale(input) {
+    locale.value = normalizeLocale(input);
+  }
+
+  function t(key, params) {
+    const lang = locale.value;
+    const dict = messages[lang] || messages.en;
+    const fallback = messages.en;
+
+    const readPath = (obj, path) => path.split('.').reduce((acc, part) => (acc && acc[part] != null ? acc[part] : undefined), obj);
+    let template = readPath(dict, key);
+    if (template == null) template = readPath(fallback, key);
+    if (template == null) return key;
+
+    if (params && typeof template === 'string') {
+      return template.replace(/\{(\w+)\}/g, (_, name) => (params[name] != null ? String(params[name]) : `{${name}}`));
+    }
+
+    return template;
+  }
+
   // 状态
   const rawData = ref(null);
   const fileSize = ref(0);
@@ -37,7 +167,7 @@ export const useImageStore = defineStore('image', () => {
 
   function validateParams() {
     if (!fileSize.value || fileSize.value <= 0) {
-      error.value = '文件大小无效';
+      error.value = t('errors.invalidFileSize');
       return false;
     }
 
@@ -48,7 +178,7 @@ export const useImageStore = defineStore('image', () => {
       pixelFormat: pixelFormat.value
     };
 
-    const validation = validateImageParams(params, fileSize.value);
+    const validation = validateImageParams(params, fileSize.value, locale.value);
     if (!validation.valid) {
       error.value = validation.error;
       return false;
@@ -59,6 +189,11 @@ export const useImageStore = defineStore('image', () => {
   }
 
   return {
+    // i18n
+    locale,
+    setLocale,
+    t,
+
     // 状态
     rawData,
     fileSize,

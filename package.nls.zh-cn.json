@@ -1,0 +1,13 @@
+{
+  "extension.displayName": "RAW 图像查看器",
+  "extension.description": "VS Code 专业 RAW 图像查看器，支持多种像素格式与智能图像处理",
+
+  "command.helloWorld.title": "你好，世界",
+  "command.openWithRawViewer.title": "使用 RAW 图像查看器打开",
+
+  "customEditor.raw.displayName": "RAW 图像查看器",
+  "customEditor.bin.displayName": "RAW 图像查看器",
+
+  "configuration.title": "RAW 图像查看器",
+  "configuration.enableBinSupport.description": "启用将 .bin 文件按 RAW 图像文件处理"
+}

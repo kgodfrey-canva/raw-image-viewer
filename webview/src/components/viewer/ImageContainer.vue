@@ -4,14 +4,14 @@
       @mousedown="handleMouseDown" @mouseup="handleMouseUp" @wheel.prevent="handleWheel"></canvas>
     <div v-if="!ready && store.rawData" class="loading-overlay">
       <div class="loading-spinner"></div>
-      <div>处理图像中...</div>
+      <div>{{ t('viewer.processing') }}</div>
     </div>
     <div class="zoom-controls">
-      <button @click="zoomOut" title="缩小">-</button>
+      <button @click="zoomOut" :title="t('viewer.zoomOut')">-</button>
       <span>{{ Math.round(zoomLevel * 100) }}%</span>
-      <button @click="zoomIn" title="放大">+</button>
-      <button @click="resetZoom" title="重置缩放">1:1</button>
-      <button @click="fitToWindow" title="适应窗口">适应</button>
+      <button @click="zoomIn" :title="t('viewer.zoomIn')">+</button>
+      <button @click="resetZoom" :title="t('viewer.resetZoom')">1:1</button>
+      <button @click="fitToWindow" :title="t('viewer.fitToWindow')">{{ t('viewer.fit') }}</button>
     </div>
   </div>
 </template>
@@ -37,6 +37,8 @@ const {
   canvasWidth,
   canvasHeight
 } = storeToRefs(store);
+
+const t = (key, params) => store.t(key, params);
 
 const canvas = ref(null);
 let ctx = null;
@@ -85,13 +87,13 @@ const displayRawImage = async (data, imgWidth, imgHeight, bpp, format) => {
     try {
       // 参数验证
       if (!data || imgWidth <= 0 || imgHeight <= 0 || bpp <= 0) {
-        throw new Error('无效的图像参数');
+        throw new Error(t('viewer.errors.invalidImageParams'));
       }
 
       // 检查图像尺寸是否过大，防止内存溢出
       const maxPixels = 50 * 1024 * 1024; // 50M像素限制
       if (imgWidth * imgHeight > maxPixels) {
-        throw new Error(`图像尺寸过大: ${imgWidth}×${imgHeight} 超过限制`);
+        throw new Error(t('viewer.errors.imageTooLarge', { width: imgWidth, height: imgHeight }));
       }
 
       ctx = canvas.value.getContext('2d');
@@ -114,7 +116,7 @@ const displayRawImage = async (data, imgWidth, imgHeight, bpp, format) => {
       }
 
       if (data.length < requiredBytes) {
-        const errorMsg = `数据不足: 需要 ${requiredBytes} 字节, 实际 ${data.length} 字节`;
+        const errorMsg = t('viewer.errors.dataTooSmall', { required: requiredBytes, actual: data.length });
         console.error(errorMsg);
         
         // 重置像素值
@@ -144,7 +146,7 @@ const displayRawImage = async (data, imgWidth, imgHeight, bpp, format) => {
       }, 10);
 
     } catch (error) {
-      console.error('图像处理错误:', error);
+      console.error(t('viewer.errors.processingError'), error);
       ready.value = true;
     }
   }, 10);
