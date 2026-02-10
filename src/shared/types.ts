@@ -12,6 +12,8 @@ export interface InitMessage extends WebviewMessage {
   body: {
     value: Uint8Array;
     editable: boolean;
+    /** VS Code UI language (e.g. "en", "en-us", "zh-cn") */
+    locale?: string;
   };
 }
 

@@ -1,7 +1,7 @@
 {
   "name": "raw-image-viewer",
-  "displayName": "RawImageViewer",
-  "description": "Professional RAW image viewer for VS Code with support for various pixel formats and intelligent image processing",
+  "displayName": "%extension.displayName%",
+  "description": "%extension.description%",
   "version": "0.0.6",
   "publisher": "YoungHong1992",
   "engines": {
@@ -19,17 +19,17 @@
     "commands": [
       {
         "command": "raw-image-viewer.helloWorld",
-        "title": "Hello World"
+        "title": "%command.helloWorld.title%"
       },
       {
         "command": "raw-image-viewer.openWithRawViewer",
-        "title": "Open with Raw Image Viewer"
+        "title": "%command.openWithRawViewer.title%"
       }
     ],
     "customEditors": [
       {
         "viewType": "raw-image-viewer.rawImage",
-        "displayName": "Raw Image Viewer",
+        "displayName": "%customEditor.raw.displayName%",
         "selector": [
           {
             "filenamePattern": "*.raw"
@@ -39,7 +39,7 @@
       },
       {
         "viewType": "raw-image-viewer.binImage",
-        "displayName": "Raw Image Viewer",
+        "displayName": "%customEditor.bin.displayName%",
         "selector": [
           {
             "filenamePattern": "*.bin"
@@ -49,12 +49,12 @@
       }
     ],
     "configuration": {
-      "title": "Raw Image Viewer",
+      "title": "%configuration.title%",
       "properties": {
         "raw-image-viewer.enableBinSupport": {
           "type": "boolean",
           "default": true,
-          "description": "Enable support for .bin files as raw image files"
+          "description": "%configuration.enableBinSupport.description%"
         }
       }
     },
@@ -76,19 +76,29 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build",
-    "compile": "tsc -p config/tsconfig.json",
+    "// --- 开发与调试 (Development) ---": "",
+    "dev": "npm-run-all --parallel watch webview:dev",
     "watch": "tsc -watch -p config/tsconfig.json",
+    "webview:dev": "npm --prefix webview run dev",
+    "webview:preview": "npm --prefix webview run preview",
+
+    "// --- 代码质量与测试 (Quality & Test) ---": "",
     "lint": "eslint src --ext ts --config config/.eslintrc.json",
     "typecheck": "tsc --noEmit -p config/tsconfig.json",
-    "test": "npm run compile && npm run lint && node ./out/test/runTest.js",
+    "test": "run-s compile lint test:run",
+    "test:run": "node ./out/test/runTest.js",
+
+    "// --- 构建与打包 (Build & Package) ---": "",
     "clean": "rimraf out dist",
-    "clean:all": "rimraf out dist node_modules webview/node_modules",
-    "dev": "npm --prefix webview run dev",
-    "preview": "npm --prefix webview run preview",
-    "build": "npm run compile && npm run build:webview",
+    "clean:all": "run-s clean clean:deps",
+    "clean:deps": "rimraf node_modules webview/node_modules",
+    "compile": "tsc -p config/tsconfig.json",
     "build:webview": "npm --prefix webview run build",
-    "package": "npm run build && npx vsce package",
+    "build": "run-p compile build:webview",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package",
+
+    "// --- 发布 (Release) ---": "",
     "release:patch": "node tools/release.js patch",
     "release:minor": "node tools/release.js minor",
     "release:major": "node tools/release.js major"
@@ -100,9 +110,11 @@
     "@types/vscode": "^1.91.0",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/vsce": "^2.15.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
     "eslint": "^8.57.0",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.7",
     "typescript": "^5.4.5"
   }

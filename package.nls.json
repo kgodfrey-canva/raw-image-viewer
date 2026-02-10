@@ -1,0 +1,13 @@
+{
+  "extension.displayName": "RawImageViewer",
+  "extension.description": "Professional RAW image viewer for VS Code with support for various pixel formats and intelligent image processing",
+
+  "command.helloWorld.title": "Hello World",
+  "command.openWithRawViewer.title": "Open with Raw Image Viewer",
+
+  "customEditor.raw.displayName": "Raw Image Viewer",
+  "customEditor.bin.displayName": "Raw Image Viewer",
+
+  "configuration.title": "Raw Image Viewer",
+  "configuration.enableBinSupport.description": "Enable support for .bin files as raw image files"
+}
