@@ -109,11 +109,13 @@ const displayRawImage = async (data, imgWidth, imgHeight, bpp, format) => {
       const maxValue = Math.pow(2, bpp) - 1;
       let requiredBytes;
       
-      if (format === 'rgb') {
-        requiredBytes = imgWidth * imgHeight * bytesPerPixelVal * 3;
-      } else {
-        requiredBytes = imgWidth * imgHeight * bytesPerPixelVal;
+      let channels;
+      switch (format) {
+        case 'rgba': channels = 4; break;
+        case 'rgb': channels = 3; break;
+        default: channels = 1; break;
       }
+      requiredBytes = imgWidth * imgHeight * bytesPerPixelVal * channels;
 
       if (data.length < requiredBytes) {
         const errorMsg = t('viewer.errors.dataTooSmall', { required: requiredBytes, actual: data.length });
@@ -128,7 +130,9 @@ const displayRawImage = async (data, imgWidth, imgHeight, bpp, format) => {
       }
 
       // 根据格式处理图像
-      if (format === 'rgb') {
+      if (format === 'rgba') {
+        processRGBImage(data, pixels, imgWidth, imgHeight, bpp, bytesPerPixelVal, maxValue, 4);
+      } else if (format === 'rgb') {
         processRGBImage(data, pixels, imgWidth, imgHeight, bpp, bytesPerPixelVal, maxValue);
       } else if (format.includes('rggb') || format.includes('grbg') || format.includes('gbrg') || format.includes('bggr')) {
         processBayerImage(data, pixels, imgWidth, imgHeight, bpp, bytesPerPixelVal, maxValue, format);
@@ -184,13 +188,13 @@ const processGrayscaleImage = (data, pixels, imgWidth, imgHeight, bpp, bytesPerP
     }
 };
 
-const processRGBImage = (data, pixels, imgWidth, imgHeight, bpp, bytesPerPixelVal, maxValue) => {
+const processRGBImage = (data, pixels, imgWidth, imgHeight, bpp, bytesPerPixelVal, maxValue, channels = 3) => {
     for (let y = 0; y < imgHeight; y++) {
         for (let x = 0; x < imgWidth; x++) {
-        const pixelIndex = (y * imgWidth + x) * bytesPerPixelVal * 3;
+        const pixelIndex = (y * imgWidth + x) * bytesPerPixelVal * channels;
         const outputIndex = (y * imgWidth + x) * 4;
 
-        for (let c = 0; c < 3; c++) {
+        for (let c = 0; c < channels; c++) {
             let pixelValue = 0;
             const channelIndex = pixelIndex + c * bytesPerPixelVal;
 
@@ -199,11 +203,9 @@ const processRGBImage = (data, pixels, imgWidth, imgHeight, bpp, bytesPerPixelVa
                     pixelValue = data[channelIndex] || 0;
                 }
             } else if (bpp <= 16) {
-                // 修复：检查数组边界并处理字节序
                 if (channelIndex + 1 < data.length) {
                     const byte1 = data[channelIndex] || 0;
                     const byte2 = data[channelIndex + 1] || 0;
-                    // 小端序：低字节在前
                     pixelValue = byte1 | (byte2 << 8);
                     const extraBits = 16 - bpp;
                     if (extraBits > 0) {
@@ -215,7 +217,9 @@ const processRGBImage = (data, pixels, imgWidth, imgHeight, bpp, bytesPerPixelVa
             const normalizedValue = Math.min(255, Math.floor((pixelValue / maxValue) * 255));
             pixels[outputIndex + c] = normalizedValue;
         }
-        pixels[outputIndex + 3] = 255;
+        if (channels < 4) {
+            pixels[outputIndex + 3] = 255;
+        }
         }
     }
 };

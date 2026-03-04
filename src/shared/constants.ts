@@ -16,7 +16,8 @@ export const SUPPORTED_BITS_PER_PIXEL = [8, 10, 12, 14, 16] as const;
 
 export const PIXEL_FORMATS = [
   'grayscale',
-  'rgb', 
+  'rgb',
+  'rgba',
   'rggb',
   'grbg', 
   'gbrg',

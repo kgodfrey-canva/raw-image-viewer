@@ -5,7 +5,18 @@ import { ImageParams } from './types';
  */
 export function calculateRequiredBytes(params: ImageParams): number {
   const bytesPerPixel = Math.ceil(params.bitsPerPixel / 8);
-  const channelCount = params.pixelFormat === 'rgb' ? 3 : 1;
+  let channelCount: number;
+  switch (params.pixelFormat) {
+    case 'rgba':
+      channelCount = 4;
+      break;
+    case 'rgb':
+      channelCount = 3;
+      break;
+    default:
+      channelCount = 1;
+      break;
+  }
   return params.width * params.height * bytesPerPixel * channelCount;
 }
 
@@ -54,7 +65,7 @@ export function validateImageParams(
     return { valid: false, error: msg.invalidBits };
   }
 
-  if (!params.pixelFormat || !['grayscale', 'rgb', 'rggb', 'grbg', 'gbrg', 'bggr'].includes(params.pixelFormat)) {
+  if (!params.pixelFormat || !['grayscale', 'rgb', 'rgba', 'rggb', 'grbg', 'gbrg', 'bggr'].includes(params.pixelFormat)) {
     return { valid: false, error: msg.invalidFormat };
   }
 

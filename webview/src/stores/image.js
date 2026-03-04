@@ -24,6 +24,7 @@ export const useImageStore = defineStore('image', () => {
       pixelFormat: {
         grayscale: 'Grayscale',
         rgb: 'RGB',
+        rgba: 'RGBA',
         rggb: 'RGGB (Bayer)',
         grbg: 'GRBG (Bayer)',
         gbrg: 'GBRG (Bayer)',
@@ -73,6 +74,7 @@ export const useImageStore = defineStore('image', () => {
       pixelFormat: {
         grayscale: '灰度',
         rgb: 'RGB',
+        rgba: 'RGBA',
         rggb: 'RGGB (Bayer)',
         grbg: 'GRBG (Bayer)',
         gbrg: 'GBRG (Bayer)',

@@ -82,6 +82,7 @@
         <select v-model="pixelFormat" @change="updateStoreValues">
           <option value="grayscale">{{ t('pixelFormat.grayscale') }}</option>
           <option value="rgb">{{ t('pixelFormat.rgb') }}</option>
+          <option value="rgba">{{ t('pixelFormat.rgba') }}</option>
           <option value="rggb">{{ t('pixelFormat.rggb') }}</option>
           <option value="grbg">{{ t('pixelFormat.grbg') }}</option>
           <option value="gbrg">{{ t('pixelFormat.gbrg') }}</option>
@@ -138,7 +139,7 @@ const validSizes = computed(() => {
   const sizes = [];
   const fileBits = fileSize.value * 8;
   const currentBits = bitsPerPixel.value;
-  const totalPixels = fileBits / currentBits;
+  const totalPixels = fileBits / (currentBits * channelCount.value);
   
   // 对每个宽高比计算可能的尺寸
   for (const ar of aspectRatios) {
@@ -151,7 +152,7 @@ const validSizes = computed(() => {
       const height = Math.round(baseSize * ar.h * multiplier);
       
       // 验证是否精确匹配
-      if (width * height * currentBits === fileBits) {
+      if (width * height * currentBits * channelCount.value === fileBits) {
         sizes.push({
           width,
           height,
@@ -183,15 +184,24 @@ const validSizes = computed(() => {
   return uniqueSizes.sort((a, b) => a.width * a.height - b.width * b.height);
 });
 
+// 获取当前像素格式的通道数
+const channelCount = computed(() => {
+  switch (pixelFormat.value) {
+    case 'rgba': return 4;
+    case 'rgb': return 3;
+    default: return 1;
+  }
+});
+
 // 验证参数是否有效
 const canApply = computed(() => {
   if (!localWidth.value || !localHeight.value || localWidth.value <= 0 || localHeight.value <= 0) {
     return false;
   }
-  
+
   const fileBits = fileSize.value * 8;
-  const requiredBits = localWidth.value * localHeight.value * bitsPerPixel.value;
-  
+  const requiredBits = localWidth.value * localHeight.value * bitsPerPixel.value * channelCount.value;
+
   return fileBits === requiredBits;
 });
 
@@ -244,7 +254,7 @@ const swapDimensions = () => {
 const onWidthChange = () => {
   if (isManualInput.value && localWidth.value > 0 && fileSize.value > 0) {
     const fileBits = fileSize.value * 8;
-    const calculatedHeight = Math.round(fileBits / (localWidth.value * bitsPerPixel.value));
+    const calculatedHeight = Math.round(fileBits / (localWidth.value * bitsPerPixel.value * channelCount.value));
     if (calculatedHeight > 0) {
       localHeight.value = calculatedHeight;
     }
@@ -257,7 +267,7 @@ const onWidthChange = () => {
 const onHeightChange = () => {
   if (isManualInput.value && localHeight.value > 0 && fileSize.value > 0) {
     const fileBits = fileSize.value * 8;
-    const calculatedWidth = Math.round(fileBits / (localHeight.value * bitsPerPixel.value));
+    const calculatedWidth = Math.round(fileBits / (localHeight.value * bitsPerPixel.value * channelCount.value));
     if (calculatedWidth > 0) {
       localWidth.value = calculatedWidth;
     }
@@ -340,9 +350,9 @@ const findExactResolutions = (totalPixels) => {
 // 为指定位深度查找推荐分辨率
 const findRecommendedResolutionForBits = (bits) => {
   if (fileSize.value === 0) return;
-  
+
   const fileBits = fileSize.value * 8;
-  const totalPixels = fileBits / bits;
+  const totalPixels = fileBits / (bits * channelCount.value);
   
   // 优先尝试标准宽高比
   const sortedAspectRatios = [...aspectRatios].sort((a, b) => {
@@ -361,7 +371,7 @@ const findRecommendedResolutionForBits = (bits) => {
       const height = Math.round(baseSize * ar.h * multiplier);
       
       // 验证是否精确匹配
-      if (width * height * bits === fileBits && width > 0 && height > 0) {
+      if (width * height * bits * channelCount.value === fileBits && width > 0 && height > 0) {
         // 找到合法参数，更新本地状态
         localWidth.value = width;
         localHeight.value = height;

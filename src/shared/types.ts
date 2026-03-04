@@ -34,7 +34,7 @@ export interface ImageParams {
   width: number;
   height: number;
   bitsPerPixel: number;
-  pixelFormat: 'grayscale' | 'rgb' | 'rggb' | 'grbg' | 'gbrg' | 'bggr';
+  pixelFormat: 'grayscale' | 'rgb' | 'rgba' | 'rggb' | 'grbg' | 'gbrg' | 'bggr';
 }
 
 /**
